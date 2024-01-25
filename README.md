@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
             else
                 std::cout << result.value() << std::endl;
         }
-    } catch (const std::exception& e) {
+    } catch (const stunning::exception& e) {
         std::cerr << e.what();
     }
 
