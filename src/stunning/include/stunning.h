@@ -15,6 +15,7 @@
 
 constexpr uint16_t kBindingRequest      = 0x0001;
 constexpr uint16_t kBindingResponse     = 0x0101;
+constexpr uint16_t kMappedAddress       = 0x0001;
 constexpr uint16_t kXorMappedAddress    = 0x0020;
 constexpr uint32_t kMessageCookie       = 0x2112a442;
 
@@ -80,10 +81,22 @@ std::optional<socket_address_t> perform_binding_request(const std::string& serve
         auto const& attributes = response.attributes;
         auto const& attributes_length = std::min<unsigned short>(ntohs(response.message_length), response.attributes.size());
 
+        std::optional<socket_address_t> fallback;
         int i = 0;
         while (i < attributes_length) {
             auto type = ntohs(*(uint16_t *)(&attributes[i]));
             auto length = ntohs(*(uint16_t *)(&attributes[i + 2]));
+
+            if (type == kMappedAddress) {
+                auto port = ntohs(*(uint16_t *)(&attributes[i + 6]));
+                std::string ip =
+                        std::to_string(attributes[i +  8]) + "." +
+                        std::to_string(attributes[i +  9]) + "." +
+                        std::to_string(attributes[i + 10]) + "." +
+                        std::to_string(attributes[i + 11]);
+
+                fallback = socket_address_t{.family = IPv4, .value = ip, .port = port};
+            }
 
             if (type == kXorMappedAddress) {
                 auto port = ntohs(*(uint16_t *)(&attributes[i + 6])) ^(kMessageCookie >> 16);
@@ -97,6 +110,9 @@ std::optional<socket_address_t> perform_binding_request(const std::string& serve
             }
             i += (length + 4);
         }
+
+        if (fallback.has_value())
+            return fallback;
     }
 
     if (received == -1)
