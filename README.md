@@ -1,6 +1,35 @@
 # stunning
 
-very basic stun client function as a header-only library
+very basic stun client function as a header-only library.
+
+CMake understands two configuration variables:
+
+- `-DBUILD_COMMAND=ON` builds and installs the stunning commmand
+- `-DBUILD_TESTS=ON` builds the tests for the library
+
+Consume in your own CMake project:
+
+```CMakeLists.txt
+cmake_minimum_required(VERSION 3.22)
+
+project(stunning VERSION 0.0.1 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+
+include(FetchContent)
+
+FetchContent_Declare(
+	stunning
+	GIT_REPOSITORY https://github.com/oliverepper/stunning.git
+    GIT_TAG main)
+
+FetchContent_MakeAvailable(stunning)
+
+add_executable(run main.cpp)
+
+target_link_libraries(run PRIVATE stunning::stunning)
+```
+Example usage:
 
 ```C++
 #include <stunning.h>
@@ -22,4 +51,3 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 ```
-
