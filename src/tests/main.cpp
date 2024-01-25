@@ -72,7 +72,7 @@ TEST_CASE("MAPPED-ADDRESS as a fallback", "[MappedAddress_fallback]") {
         REQUIRE(result.has_value());
     }
 
-    SECTION("t-online vs teamfon") {
+    SECTION("t-online vs google") {
         auto t_online = perform_binding_request("stun.t-online.de");
         auto google = perform_binding_request("stun1.l.google.com", 19302);
 
