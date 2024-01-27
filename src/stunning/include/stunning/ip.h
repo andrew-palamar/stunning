@@ -35,8 +35,13 @@ std::ostream & operator<<(std::ostream& os, const socket_address_t& address) {
 
 std::vector<socket_address_t> hostname_to_ip(const std::string& hostname) {
     std::vector<socket_address_t> ips{};
-    struct addrinfo hints{0}, *result;
-    hints.ai_family     = PF_UNSPEC;
+
+    addrinfo hints {
+        .ai_family  = PF_UNSPEC,
+        .ai_flags   = AI_PASSIVE,
+    };
+
+    addrinfo *result;
 
     int status{};
     if ((status = getaddrinfo(hostname.c_str(), NULL, &hints, &result)) != 0) {
