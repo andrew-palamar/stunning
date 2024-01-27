@@ -1,0 +1,43 @@
+stages:
+  - build
+  - test
+
+build-tests:
+  stage: build
+  tags:
+    - sfmac
+  script:
+    - if [ ! -x "/opt/homebrew/bin/cmake" ]; then brew install cmake; fi
+    - if [ ! -x "/opt/homebrew/bin/ninja" ]; then brew install ninja; fi
+    - cmake ./ -G"Ninja Multi-Config" -DCMAKE_INSTALL_PREFIX=$(pwd)/stunning -DBUILD_TESTS=ON -Bbuild-stunning
+    - cmake --build build-stunning --config="Release" --target=install
+  artifacts:
+    paths:
+      - ./stunning/bin/stunning-tests
+    expire_in: 1 day
+
+run-tests-on-sfmac:
+  stage: test
+  tags:
+    - sfmac
+  script:
+    - ./stunning/bin/stunning-tests --reporter JUnit::out=result-junit.xml --reporter console::out=-::colour-mode=ansi
+  artifacts:
+    when: always
+    paths:
+      - result-junit.xml
+    reports:
+      junit: result-junit.xml
+
+run-tests-on-tfmac:
+  stage: test
+  tags:
+    - tfmac
+  script:
+    - ./stunning/bin/stunning-tests --reporter JUnit::out=result-junit.xml --reporter console::out=-::colour-mode=ansi
+  artifacts:
+    when: always
+    paths:
+      - result-junit.xml
+    reports:
+      junit: result-junit.xml
