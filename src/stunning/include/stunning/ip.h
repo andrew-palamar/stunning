@@ -41,15 +41,20 @@ std::vector<socket_address_t> hostname_to_ip(const std::string& hostname) {
         .ai_flags   = AI_PASSIVE,
     };
 
-    addrinfo *result;
+    auto deleter = [](addrinfo *ai){ freeaddrinfo(ai); };
+    std::unique_ptr<addrinfo, decltype(deleter)> result;
 
-    int status{};
-    if ((status = getaddrinfo(hostname.c_str(), NULL, &hints, &result)) != 0) {
-        throw stunning::exception{gai_strerror(status)};
+    {
+        int status{};
+        addrinfo *temp_result;
+        if ((status = getaddrinfo(hostname.c_str(), NULL, &hints, &temp_result)) != 0) {
+            throw stunning::exception{gai_strerror(status)};
+        }
+        result.reset(temp_result);
     }
 
     struct addrinfo *p;
-    for (p = result; p != nullptr; p = p->ai_next) {
+    for (p = result.get(); p != nullptr; p = p->ai_next) {
         switch (p->ai_family) {
             case AF_INET: {
                 struct sockaddr_in *address = (struct sockaddr_in *) p->ai_addr;
@@ -68,7 +73,7 @@ std::vector<socket_address_t> hostname_to_ip(const std::string& hostname) {
         }
     }
 
-    freeaddrinfo(result);
+//    freeaddrinfo(result);
 
     return ips;
 }
