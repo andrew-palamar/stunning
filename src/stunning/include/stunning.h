@@ -49,17 +49,18 @@ std::optional<socket_address_t> perform_binding_request(const std::string& serve
         throw stunning::exception{strerror(errno)};
 
     // set timeout
-    struct timeval timeout;
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 0;
+    timeval timeout {
+        .tv_usec = 0,
+        .tv_sec = 1
+    };
     if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1)
         throw stunning::exception{strerror(errno)};
 
     // get the server address
-    sockaddr_in server_address{0};
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(port);
-
+    sockaddr_in server_address {
+        .sin_family = AF_INET,
+        .sin_port   = htons(port)
+    };
     auto maybe_server_ipv4 = first_ipv4_address(server);
     if (maybe_server_ipv4.has_value())
         inet_pton(AF_INET, maybe_server_ipv4.value().c_str(), &server_address.sin_addr);
@@ -120,7 +121,5 @@ std::optional<socket_address_t> perform_binding_request(const std::string& serve
 
     return std::nullopt;
 }
-
-
 
 #endif //STUNNING_STUNNING_H
