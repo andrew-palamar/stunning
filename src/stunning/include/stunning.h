@@ -50,8 +50,8 @@ std::optional<socket_address_t> perform_binding_request(const std::string& serve
 
     // set timeout
     timeval timeout {
+        .tv_sec = 1,
         .tv_usec = 0,
-        .tv_sec = 1
     };
     if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1)
         throw stunning::exception{strerror(errno)};

@@ -37,8 +37,8 @@ std::vector<socket_address_t> hostname_to_ip(const std::string& hostname) {
     std::vector<socket_address_t> ips{};
 
     addrinfo hints {
-        .ai_family  = PF_UNSPEC,
         .ai_flags   = AI_PASSIVE,
+        .ai_family  = PF_UNSPEC,
     };
 
     auto deleter = [](addrinfo *ai){ freeaddrinfo(ai); };
@@ -72,8 +72,6 @@ std::vector<socket_address_t> hostname_to_ip(const std::string& hostname) {
             }
         }
     }
-
-//    freeaddrinfo(result);
 
     return ips;
 }
