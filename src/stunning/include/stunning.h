@@ -80,7 +80,7 @@ std::optional<socket_address_t> perform_binding_request(const std::string& serve
     if (response.transaction_id == request.transaction_id &&
         response.message_type == kBindingResponse) {
         auto const& attributes = response.attributes;
-        auto const& attributes_length = std::min<unsigned short>(ntohs(response.message_length), response.attributes.size());
+        auto const attributes_length = std::min<unsigned short>(ntohs(response.message_length), response.attributes.size());
 
         std::optional<socket_address_t> fallback;
         int i = 0;
