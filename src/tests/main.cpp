@@ -76,6 +76,6 @@ TEST_CASE("MAPPED-ADDRESS as a fallback", "[MappedAddress_fallback]") {
         auto t_online = perform_binding_request("stun.t-online.de");
         auto google = perform_binding_request("stun1.l.google.com", 19302);
 
-        REQUIRE(t_online.value().value.compare(google.value().value) == 0);
+        REQUIRE(t_online.value().value == google.value().value);
     }
 }
