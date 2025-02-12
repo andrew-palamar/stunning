@@ -42,7 +42,7 @@ struct __attribute__((packed)) stun_response {
     std::array<uint8_t, 1000> attributes;
 };
 
-std::optional<socket_address_t> perform_binding_request(const std::string& server, const unsigned short port = 3478) {
+inline std::optional<socket_address_t> perform_binding_request(const std::string& server, const unsigned short port = 3478) {
     // get socket
     int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (fd == -1)
